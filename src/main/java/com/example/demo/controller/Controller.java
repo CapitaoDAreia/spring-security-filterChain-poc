@@ -1,12 +1,18 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.DTO.LoginDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api")
 public class Controller {
+
+    @Autowired
+    AuthenticationManager manager;
 
     @GetMapping(value = "/allowed")
     public String method1(){
@@ -16,5 +22,13 @@ public class Controller {
     @GetMapping(value = "/authMethod")
     public String method2(){
         return "need auth method";
+    }
+
+    @PostMapping(value = "/authManager")
+    public ResponseEntity<?> method3(@RequestBody LoginDTO dto){
+        var token = new UsernamePasswordAuthenticationToken(dto.login(), dto.password());
+        var authentication = manager.authenticate(token);
+
+        return ResponseEntity.ok().body(authentication);
     }
 }
